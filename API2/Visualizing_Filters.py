@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import cv2
 
 def compute_loss(input_image, filter_index, feature_extractor):
     activation = feature_extractor(input_image)
@@ -35,13 +36,17 @@ def visualize_filter(filter_index, feature_extractor,
                      img_width=180, img_height=180, 
                      custom=True, initializer=None, 
                      iterations=30, learning_rate = 10.0,
-                     return_decomposed=True):
+                     return_decomposed=True, blur=5, upscaling_factor=1.2, upscaling_steps=12):
     if initializer:
         img = tf.Variable(initializer(img_width, img_height))
     else:
         img = initialize_image(img_width, img_height, custom)
     for iteration in range(iterations):
         loss, img = gradient_ascent_step(img, filter_index, learning_rate, feature_extractor)
+        if iteration%upscaling_steps==0:
+            sz = int(upscaling_factor * sz)  # calculate new image size
+            img = cv2.resize(img, (sz, sz), interpolation = cv2.INTER_CUBIC)  # scale image up
+            if blur is not None: img = cv2.blur(img,(blur,blur))  # blur image to reduce high frequency patterns
 
     if return_decomposed:
         # Decode the resulting input image
