@@ -37,6 +37,7 @@ def visualize_filter(filter_index, feature_extractor,
                      custom=True, initializer=None, 
                      iterations=30, learning_rate = 10.0,
                      return_decomposed=True, blur=5, upscaling_factor=1.2, upscaling_steps=12):
+    sz = img_height
     if initializer:
         img = tf.Variable(initializer(img_width, img_height))
     else:
